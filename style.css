@@ -1,4 +1,4 @@
-    :root {
+:root {
       --wine: #6e1f2f;
       --wine-dark: #4b111d;
       --wine-light: #8d2c40;
@@ -20,6 +20,10 @@
       user-select: text;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
@@ -29,6 +33,10 @@
       font-family: 'Montserrat', 'Noto Sans Devanagari', sans-serif;
       color: var(--wine);
       overflow-x: hidden;
+    }
+
+    #save-the-date {
+      scroll-margin-top: 24px;
     }
 
     .font-serif-display {

@@ -59,6 +59,7 @@ const i18n = {
     rsvpHeading: 'Will You Join Us?',
     guestNameLabel: 'Guest Name',
     guestNamePlaceholder: 'Enter your full name',
+    guestWhatsappLabel: 'Guest WhatsApp Number (Optional — for your invite copy)',
     responseLabel: 'Response',
     acceptOption: 'Joyfully Accepts',
     declineOption: 'Regretfully Declines',
@@ -130,6 +131,7 @@ const i18n = {
     rsvpHeading: 'आपण सोहळ्याला येणार का?',
     guestNameLabel: 'पाहुण्यांचे पूर्ण नाव',
     guestNamePlaceholder: 'आपले पूर्ण नाव लिहा',
+    guestWhatsappLabel: 'पाहुण्यांचा व्हॉट्सॲप नंबर (ऐच्छिक)',
     responseLabel: 'प्रतिसाद',
     acceptOption: 'आनंदाने उपस्थित राहू',
     declineOption: 'दिलगिरीसह अनुपस्थित',
@@ -152,15 +154,15 @@ function formatRsvpMessage(data) {
   if (currentLang === 'mr') {
     const guestLabel = i18n.mr.guestOptions[parseInt(data.guests, 10) - 1] || data.guests;
     if (data.status === 'attending') {
-      return `${data.name}, दिपक आणि प्रिया यांच्या विवाह सोहळ्यासाठी ${guestLabel} यांच्या उपस्थितीची नोंद झाली आहे. आपले स्वागत करण्यास आम्ही उत्सुक आहोत!`;
+      return `${data.name}, दिपक आणि प्रिया यांच्या विवाह सोहळ्यासाठी ${guestLabel} यांच्या उपस्थितीची नोंद झाली आहे. शुभ मुहूर्त सोमवार, १४ डिसेंबर २०२६ रोजी दु. १२:२१ वा. • अतिथी बँक्वेट हॉल, देवाची आळंदी.`;
     }
-    return `आपला निरोप कळवल्याबद्दल धन्यवाद, ${data.name}. सोहळ्यात आपली उणीव नक्कीच भासेल!`;
+    return `आपला निरोप कळवल्याबद्दल धन्यवाद, ${data.name}. सोमवार, १४ डिसेंबर २०२६ रोजी होणाऱ्या सोहळ्यात आपली उणीव नक्कीच भासेल!`;
   } else {
     const guestText = data.guests === '1' ? '1 Guest' : `${data.guests} Guests`;
     if (data.status === 'attending') {
-      return `We have reserved seats for ${guestText} under ${data.name} for Dipak & Priya's wedding celebration. We look forward to celebrating with you!`;
+      return `We have reserved seats for ${guestText} under ${data.name} for Dipak & Priya's wedding on Monday, 14 December 2026 (Muhurat/Pheras at 12:21 pm, Reception 3:00 pm onwards) at Atithi Banquet Hall, Alandi.`;
     }
-    return `Thank you for letting us know, ${data.name}. You will be warmly missed at Dipak & Priya's celebration!`;
+    return `Thank you for letting us know, ${data.name}. We will miss you on Monday, 14 December 2026 at Atithi Banquet Hall, Alandi!`;
   }
 }
 
@@ -177,10 +179,8 @@ function applyLanguage(lang) {
     }
   });
 
-  // Scroll status pill
   scrollStatusPill.textContent = isScrollRevealed ? t.revealedPill : t.dragHint;
 
-  // Form placeholders & selects
   document.getElementById('rsvp-name').placeholder = t.guestNamePlaceholder;
   document.getElementById('rsvp-note').placeholder = t.blessingsPlaceholder;
 
@@ -258,7 +258,6 @@ if (bgAudio) {
   });
 }
 
-// Pause background song when playing the couple video with its own sound
 if (inviteVideo) {
   inviteVideo.addEventListener('play', () => {
     if (isMusicPlaying || (bgAudio && !bgAudio.paused)) {
@@ -348,7 +347,7 @@ function animatePetals() {
 }
 
 /* =========================================================================
-   3. OPENING 3D BOOK INTERACTION
+   3. OPENING 3D BOOK & SMOOTH ANCHOR SCROLLING
    ========================================================================= */
 const bookOverlay = document.getElementById('book-overlay');
 const book3d = document.getElementById('book-3d');
@@ -387,6 +386,18 @@ function revealHeroTypography() {
     setTimeout(() => el.classList.add('visible'), delay);
   });
 }
+
+document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+  anchor.addEventListener('click', (e) => {
+    const targetId = anchor.getAttribute('href');
+    if (!targetId || targetId === '#') return;
+    const targetEl = document.querySelector(targetId);
+    if (targetEl) {
+      e.preventDefault();
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
 
 /* =========================================================================
    4. SAVE THE DATE — DRAG OR TAP TASSEL TO UNROLL SCROLL
@@ -461,7 +472,6 @@ window.addEventListener('touchmove', (e) => {
 }, { passive: true });
 window.addEventListener('touchend', onDragEnd);
 
-// Live Countdown to Monday, 14 December 2026 at 12:21 PM IST
 const targetWeddingTime = new Date('2026-12-14T12:21:00+05:30').getTime();
 function updateCountdown() {
   const now = Date.now();
@@ -479,7 +489,6 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
-// Download .ics Calendar Event for 14 December 2026 (12:21 PM to 10:00 PM IST)
 document.getElementById('add-calendar-btn').addEventListener('click', () => {
   const icsContent = [
     'BEGIN:VCALENDAR',
@@ -595,7 +604,7 @@ const ceremonies = [
 
 const festivitiesStage = document.getElementById('festivities-stage');
 const eventDotsContainer = document.getElementById('event-dots');
-let activeEventIndex = 3; // Highlight Pheras by default
+let activeEventIndex = 3;
 
 function renderFestivities() {
   festivitiesStage.innerHTML = '';
@@ -739,8 +748,135 @@ festivitiesStage.addEventListener('touchend', (e) => {
 renderFestivities();
 
 /* =========================================================================
-   6. COPY ADDRESS & RSVP FORM
+   6. AUTOMATIC GOOGLE SHEETS SAVE, DIRECT WHATSAPP WEBHOOK & THANKS POPUP
    ========================================================================= */
+// 1. Paste your deployed Google Apps Script Web App URL (/exec) for "Guest List"
+const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby_t7WvA22so8Y5-Y5Z5xXOXeRnKX-rZVrtL1WjxojN2NjLfCcLz8b08NtU4Uh_uZRJ/exec';
+
+// 2. Paste your server / WhatsApp API webhook URL that sends directly to WhatsApp
+const WHATSAPP_WEBHOOK_URL = 'YOUR_WHATSAPP_API_WEBHOOK_URL';
+
+// 3. Groom & Bride WhatsApp numbers (country code + number, no + or spaces)
+const GROOM_WHATSAPP = '91XXXXXXXXXX';
+const BRIDE_WHATSAPP = '91XXXXXXXXXX';
+
+const GOOGLE_MAPS_URL = 'https://maps.app.goo.gl/BZy5rXUEpRbzrNj5A';
+const FULL_VENUE_ADDRESS = 'Atithi Banquet Hall, Indrayani Tower, Near Nagar Parishad, PMT Bus Stop, Devachi, Alandi-412105, Maharashtra';
+
+function normalizeWhatsAppPhone(rawPhone) {
+  const digits = (rawPhone || '').replace(/\D/g, '');
+  if (!digits) return '';
+  return digits.length === 10 ? `91${digits}` : digits;
+}
+
+function buildWhatsAppInviteMessage(data) {
+  const statusText = data.status === 'attending' ? 'Joyfully Accepts' : 'Regretfully Declines';
+  const guestText = data.guests === '1' ? '1 Guest' : `${data.guests} Guests`;
+  const lines = [
+    'Shubh Vivaah — Dipak & Priya Wedding',
+    `Guest: ${data.name}`,
+    data.whatsapp ? `Guest WhatsApp: ${normalizeWhatsAppPhone(data.whatsapp)}` : null,
+    `Response: ${statusText} (${guestText})`,
+    'Date: Monday, 14 December 2026',
+    'Muhurat (Pheras): 12:21 pm (Reception 3:00 pm onwards)',
+    `Venue: ${FULL_VENUE_ADDRESS}`,
+    `Google Maps: ${GOOGLE_MAPS_URL}`
+  ].filter(Boolean);
+
+  if (data.note) {
+    lines.push(`Blessings: ${data.note}`);
+  }
+  return lines.join('\n');
+}
+
+function saveRsvpToGoogleSheet(data) {
+  if (!GOOGLE_SHEET_WEBHOOK_URL || GOOGLE_SHEET_WEBHOOK_URL.includes('YOUR_GOOGLE')) {
+    return Promise.resolve(false);
+  }
+
+  const payload = {
+    name: data.name,
+    whatsapp: normalizeWhatsAppPhone(data.whatsapp),
+    statusLabel: data.status === 'attending' ? 'Joyfully Accepts' : 'Regretfully Declines',
+    guests: data.guests,
+    note: data.note,
+    lang: currentLang
+  };
+
+  return fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  })
+    .then(() => true)
+    .catch((err) => {
+      console.error('Google Sheet save error:', err);
+      return false;
+    });
+}
+
+function sendRsvpDirectlyToWhatsApp(data) {
+  if (!WHATSAPP_WEBHOOK_URL || WHATSAPP_WEBHOOK_URL === 'YOUR_WHATSAPP_API_WEBHOOK_URL') {
+    return Promise.resolve(false);
+  }
+
+  const groomPhone = normalizeWhatsAppPhone(GROOM_WHATSAPP);
+  const bridePhone = normalizeWhatsAppPhone(BRIDE_WHATSAPP);
+  const guestPhone = normalizeWhatsAppPhone(data.whatsapp);
+  const recipients = [groomPhone, bridePhone, guestPhone].filter(Boolean);
+  const message = buildWhatsAppInviteMessage(data);
+
+  return fetch(WHATSAPP_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      groomPhone,
+      bridePhone,
+      guestPhone,
+      recipients,
+      message,
+      weddingDetails: {
+        date: 'Monday, 14 December 2026',
+        muhurat: '12:21 pm',
+        receptionTime: '3:00 pm onwards',
+        venue: FULL_VENUE_ADDRESS,
+        googleMapsUrl: GOOGLE_MAPS_URL
+      },
+      rsvp: {
+        name: data.name,
+        whatsapp: guestPhone,
+        status: data.status,
+        statusLabel: data.status === 'attending' ? 'Joyfully Accepts' : 'Regretfully Declines',
+        guests: data.guests,
+        note: data.note,
+        language: currentLang
+      }
+    })
+  })
+    .then((res) => res.ok)
+    .catch(() => false);
+}
+
+function openRsvpPopup(data) {
+  const modal = document.getElementById('rsvp-popup-modal');
+  const popupBody = document.getElementById('popup-thanks-body');
+  if (!modal) return;
+
+  if (popupBody) {
+    popupBody.textContent = formatRsvpMessage(data);
+  }
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeRsvpPopup() {
+  const modal = document.getElementById('rsvp-popup-modal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
 function showToast(message) {
   const toast = document.getElementById('toast-msg');
   toast.textContent = message;
@@ -750,9 +886,8 @@ function showToast(message) {
 
 const copyBtn = document.getElementById('copy-address-btn');
 copyBtn.addEventListener('click', () => {
-  const fullAddress = 'Atithi Banquet Hall, Indrayani Tower, Near Nagar Parishad, PMT Bus Stop, Devachi, Alandi-412105, Maharashtra';
   const tempInput = document.createElement('textarea');
-  tempInput.value = fullAddress;
+  tempInput.value = FULL_VENUE_ADDRESS;
   document.body.appendChild(tempInput);
   tempInput.select();
   document.execCommand('copy');
@@ -766,23 +901,28 @@ copyBtn.addEventListener('click', () => {
   }, 2200);
 });
 
-// RSVP Form submission & Update Response preservation
 const rsvpForm = document.getElementById('rsvp-form');
 const rsvpConfirmation = document.getElementById('rsvp-confirmation');
 
 rsvpForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const name = document.getElementById('rsvp-name').value.trim();
+  const whatsappInput = document.getElementById('rsvp-whatsapp');
+  const whatsapp = whatsappInput ? whatsappInput.value.trim() : '';
   const status = document.getElementById('rsvp-status').value;
   const guests = document.getElementById('rsvp-guests').value;
   const note = document.getElementById('rsvp-note').value.trim();
 
-  lastRsvpSubmission = { name, status, guests, note };
+  lastRsvpSubmission = { name, whatsapp, status, guests, note };
   document.getElementById('rsvp-confirm-text').textContent = formatRsvpMessage(lastRsvpSubmission);
 
   rsvpForm.classList.add('hidden');
   rsvpConfirmation.classList.remove('hidden');
   triggerBurst(window.innerWidth / 2, window.innerHeight * 0.65, 32);
+
+  openRsvpPopup(lastRsvpSubmission);
+  saveRsvpToGoogleSheet(lastRsvpSubmission);
+  sendRsvpDirectlyToWhatsApp(lastRsvpSubmission);
 });
 
 document.getElementById('rsvp-reset').addEventListener('click', () => {
@@ -790,7 +930,28 @@ document.getElementById('rsvp-reset').addEventListener('click', () => {
   rsvpForm.classList.remove('hidden');
 });
 
-// Start petal animation loop on window load
+document.getElementById('close-rsvp-popup').addEventListener('click', closeRsvpPopup);
+
+document.getElementById('rsvp-popup-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'rsvp-popup-modal') {
+    closeRsvpPopup();
+  }
+});
+
 window.onload = function () {
   animatePetals();
 };
+
+
+// For smooth scroling animation 
+document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+  anchor.addEventListener('click', (e) => {
+    const targetId = anchor.getAttribute('href');
+    if (!targetId || targetId === '#') return;
+    const targetEl = document.querySelector(targetId);
+    if (targetEl) {
+      e.preventDefault();
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
